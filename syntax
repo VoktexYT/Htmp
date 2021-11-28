@@ -4,7 +4,7 @@
 
 from module import *
 
-project = Web(path, 'directoryName', debug=True)
+project = Web(path, 'directoryName')
 
 page = project.init(path, 'name.html')
 html = Html(page1)
