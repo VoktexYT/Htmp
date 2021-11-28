@@ -1,0 +1,7 @@
+
+*Text* = <em></em>
+**Text** = <strong></strong>
+"Text" = <mark></mark>
+
+Txt \n Txt = txt <br/>
+txt /-/ txt = txt <hr/> txt
