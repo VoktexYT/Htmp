@@ -1,7 +1,16 @@
+#############################################
+# USED
+#############################################
 
-*Text* = <em></em>
-**Text** = <strong></strong>
-"Text" = <mark></mark>
+from module import *
 
-Txt \n Txt = txt <br/>
-txt /-/ txt = txt <hr/> txt
+project = Web(path, 'directoryName', debug=True)
+
+page = project.init(path, 'name.html')
+html = Html(page1)
+
+html.Body['p']('hello wold')
+
+
+-------------------------------------------------
+code = [] # he will be Html class

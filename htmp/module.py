@@ -1,5 +1,5 @@
-from htmp.changeTxt import ChangeHtmlTxt
-from htmp.error import Error
+from changeTxt import ChangeHtmlTxt
+from error import Error
 
 __all__ = ['Web', 'Html']
 
