@@ -1,5 +1,6 @@
 import os
 import ChangeTxtHtml
+from Error import Error
 
 
 class Web:
@@ -12,6 +13,12 @@ class Web:
             os.mkdir(self._project_name)
         except FileExistsError:
             pass
+
+    def load(self, code: list):
+        for pageCode in code:
+            with open(self._project_path+'/'+self._project_name+'/'+pageCode[1], 'a') as file:
+                for codes in pageCode[0]:
+                    file.write(codes)
 
     def init(self, name):
         name = name.replace(".", '')
@@ -35,7 +42,7 @@ class Html:
         self._directory_path = page['directory-path']
 
         self._charset = '<none>'
-        self.idx_body = 1
+        self._idx_body = 1
 
         self._headerCode = [
             '<!DOCTYPE html>',
@@ -57,7 +64,9 @@ class Html:
             'charset': self._Header_charset
         }
         self.Body = {
-
+            'h': self._Body_title,
+            'p': self._Body_paragraph,
+            'img': self._Body_image
         }
 
     def _Header_title(self, content: str):
@@ -75,7 +84,24 @@ class Html:
         if 6 >= size >= 1:
             content = ChangeTxtHtml.ChangeHtmlTxt(content).change()
             generate = f"<h{size}>{content}</h{size}>"
-            self._bodyCode.insert(self.idx_body, generate)
-            self.idx_body += 1
+            self._bodyCode.insert(self._idx_body, generate)
+            self._idx_body += 1
         else:
-            self._bodyCode.insert(self.idx_body, Error(0).returnError())
+            self._bodyCode.insert(self._idx_body, Error(0).returnError())
+            self._idx_body += 1
+
+    def _Body_paragraph(self, content: str, *, id_=None, class_=None):
+        content = ChangeTxtHtml.ChangeHtmlTxt(content).htmlspacialchar('>', '<', '/')
+        content = ChangeTxtHtml.ChangeHtmlTxt(content).change()
+        generate = f"<p>{content}</p>"
+        self._bodyCode.insert(self._idx_body, generate)
+        self._idx_body += 1
+
+    def _Body_image(self, url: str, *, id_=None, class_=None):
+        url = ChangeTxtHtml.ChangeHtmlTxt(url).htmlspacialchar('>', '<')
+        generate = f"<img src='{url}'>"
+        self._bodyCode.insert(self._idx_body, generate)
+        self._idx_body += 1
+
+    def source(self):
+        return [self._headerCode + self._bodyCode, self._file_name]
