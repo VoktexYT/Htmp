@@ -16,13 +16,13 @@ class Web:
 
     def load(self, code: list):
         for pageCode in code:
-            with open(self._project_path+'/'+self._project_name+'/'+pageCode[1], 'a') as file:
+            with open(self._project_path + '/' + self._project_name + '/' + pageCode[1], 'a') as file:
                 for codes in pageCode[0]:
                     file.write(codes)
 
     def init(self, name):
         name = name.replace(".", '')
-        with open(os.getcwd()+'/'+self._project_name+'/'+f'{name}.html', 'w') as file:
+        with open(os.getcwd() + '/' + self._project_name + '/' + f'{name}.html', 'w') as file:
             file.close()
 
         return {
@@ -36,10 +36,10 @@ class Web:
 class Html:
     def __init__(self, page):
         self._page = page
-        self._file_name = page['file-name']
         self._file_path = page['file-path']
         self._directory_name = page['directory-name']
         self._directory_path = page['directory-path']
+        self._file_name = page['file-name']
 
         self._charset = '<none>'
         self._idx_body = 1
@@ -79,10 +79,16 @@ class Html:
         generate = f'<meta charset="{content}">'
         self._headerCode[3] = generate
 
-    def _Body_title(self, size: int, content: str, *, id_=None, class_=None):
-        content = ChangeTxtHtml.ChangeHtmlTxt(content).htmlspacialchar('<', '>', '/')
+    def _Body_title(self, size: int, content: str, *, id_=None, class_=None, url_a: list = None):
         if 6 >= size >= 1:
+            content = ChangeTxtHtml.ChangeHtmlTxt(content).htmlspacialchar('<', '>', '/')
             content = ChangeTxtHtml.ChangeHtmlTxt(content).change()
+            if url_a is not None:
+                print('in')
+                u = []
+                for i in url_a:
+                    u.append(i.source()[1])
+                content = ChangeTxtHtml.ChangeHtmlTxt(content).changeBalise_a(url_a)
             generate = f"<h{size}>{content}</h{size}>"
             self._bodyCode.insert(self._idx_body, generate)
             self._idx_body += 1
@@ -90,9 +96,14 @@ class Html:
             self._bodyCode.insert(self._idx_body, Error(0).returnError())
             self._idx_body += 1
 
-    def _Body_paragraph(self, content: str, *, id_=None, class_=None):
+    def _Body_paragraph(self, content: str, *, id_=None, class_=None, url_a: list = None):
         content = ChangeTxtHtml.ChangeHtmlTxt(content).htmlspacialchar('>', '<', '/')
         content = ChangeTxtHtml.ChangeHtmlTxt(content).change()
+        if url_a is not None:
+            u = []
+            for i in url_a:
+                u.append(i.source()[1])
+            content = ChangeTxtHtml.ChangeHtmlTxt(content).changeBalise_a(u)
         generate = f"<p>{content}</p>"
         self._bodyCode.insert(self._idx_body, generate)
         self._idx_body += 1

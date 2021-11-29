@@ -1,4 +1,9 @@
-a = [1, 2, 3]
-b = [4, 5, 6]
+import ChangeTxtHtml
 
-print(a+b)
+a = 'clicker :ici: pour se connecter ou bien :ici:'
+
+b = ['index.html', 'index2.html']
+
+a = ChangeTxtHtml.ChangeHtmlTxt(a).changeBalise_a(b)
+
+print(a)

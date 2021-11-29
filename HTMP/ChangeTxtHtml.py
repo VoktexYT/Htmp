@@ -1,3 +1,5 @@
+import re
+
 class ChangeHtmlTxt:
 
     def __init__(self, txt: str):
@@ -28,3 +30,14 @@ class ChangeHtmlTxt:
         for chars in char:
             self.txt = self.txt.replace(chars, '')
         return self.txt
+
+    def changeBalise_a(self, url: list):
+        txt = self.txt.split(':')
+        txt2 = txt[1::2]
+        if len(txt2) == len(url):
+            for i, word in enumerate(txt2):
+                txt2[i] = f"<a href='{url[i]}'>"+str(word)+"</a>"
+                self.txt = re.sub(rf':{word}:', f'{txt2[i]}', self.txt, count=1)
+            return self.txt
+        else:
+            return 'error'

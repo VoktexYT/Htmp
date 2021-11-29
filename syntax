@@ -1,16 +1,12 @@
-#############################################
-# USED
-#############################################
-
-from module import *
-
-project = Web(path, 'directoryName')
-
-page = project.init(path, 'name.html')
-html = Html(page1)
-
-html.Body['p']('hello wold')
+index_html.Body['p']('si vous voulez vous connecter aller :ici: sion :ici:', a=['login.html', 'main.html'])
 
 
--------------------------------------------------
-code = [] # he will be Html class
+$----------------------------------------------------------$
+|sup': '^^',
+    'sub': '^',
+   'strong': '**',
+   em': '\\',
+      'mark': '#',
+      u': '__',
+      'strike': '--',
+$----------------------------------------------------------$
