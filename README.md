@@ -92,8 +92,8 @@ page1_html.Body["img"]("path or url")
 ### [string shotcut]
 |Sup|Sub|Bold|italic|Highlight|under-line|center-line|link|
 |---|---|----|------|---------|----------|-----------|----|
-|^^|^|**|\\|#|__|\-\-|:|
-|^^text^^|^text^|**text\*\*|\\text\\|#text#|__text\_\_|--text--|:text:|
+|^^ |^  |**  |\\    |#        |__        |\-\-       |:   |
+|^^text^^|^text^|**text\*\*|\\text\\ |#text#|__text\_\_|--text--|:text:|
 |<sup>text|<sub>text|<strong>text|<em>text|<mark>text|<u>text|<strike>text|<a>text|
 
 ---
