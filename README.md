@@ -7,70 +7,89 @@
 * **how edit html code** 
 * **string shortcut**
 * **project example**
-* **credit**
+* **about**
 ---
 ---
 
-### how install and config
+### [how install and config ?]
 * For **install** module, click on green button "code" and download
 * To **use** the module, choose the htmp manager and place it in your project
-* To **try**, import it into your python file
+* To **try**, import it into your python file ```import htmp```
+
+---
+---
+
+### [how use htmp ?]
 
 ---
 
-### how use htmp
 * **import** htmp module
 ```python
 import htmp
 ```
 
-* **init** project
+---
+
+* **init** your project
 ```python
 project1 = htmp.Web("<path>", "<directory name>")
 ```
+* ```<path>``` insert the path where the folder will be located with the html code
+* ```<directory name>``` give the directory name
+---
 
 * **create** html file
 ```python
-page1_htnl = htmp.Html(project1.init("index"))
+page1_htnl = htmp.Html(project1.init("<html name file>"))
 ```
+
+* put the project variable and do ```'.init()``` to create the html file
+* ```html name file``` give the html file name
+
+---
 
 * **load** your project
 ```python
 all_file = [page1_html.source()]
 project1.load(all_file)
 ```
+
+* put all html page variable in the list ```.load([ this ])```
+* don't forget ```.source() ``` '' at the end of the variable 
+---
 ---
 
-### how edit html page
-* header Charest
+### [how edit html page ?]
+* put the Charest
 ```python
 page1_html.Header["charset"]("utf-8")
 ```
 
-* header title
+* put the title in the Header
 ```python
 page1_html.Header["title"]("web site !")
 ```
 
-* body title (h1, h2, h3, ...)
+* put the title in the Body (h1, h2, h3, ...)
 ```python
 page1_html.Body["h"](1, "this h1")
 #                    ^ is size (1 to 6)
 ```
 
-* Body text
+* put simple text
 ```python
 page1_html.Body["p"]("this text")
 ```
 
-* Body image
+* put image
 ```python
 page1_html.Body["img"]("path or url")
 ```
 
 ---
+---
 
-### string shotcut
+### [string shotcut]
 |Sup|Sub|Bold|italic|Highlight|under-line|center-line|link|
 |---|---|----|------|---------|----------|-----------|----|
 |^^|^|**|\|#|__|--|:|
@@ -102,3 +121,13 @@ page1_html.Body["p"]("on :click:", a_path=[page2_html])
 ```python
 page1_html.Body["p"](":one: :two: :three: [etc..]", a_path=[one_file, tow_file, three_file])
 ```
+
+---
+---
+###About
+
+* create by ```WinstonWolf007```
+* version ```4```
+
+---
+* no question
