@@ -18,7 +18,7 @@
 ---
 
 ### how use htmp
-* install html module
+* install htmp module
 ```python
 import htmp
 ```
@@ -32,3 +32,12 @@ project1 = htmp.Web("<path>", "<directory name>")
 ```python
 page1_htnl = htmp.Html(project1.init("index"))
 ```
+
+* load your project
+```python
+all_file = [page1_html.source()]
+project1.load(all_file)
+```
+---
+
+### hoe edit html page
