@@ -40,4 +40,29 @@ project1.load(all_file)
 ```
 ---
 
-### hoe edit html page
+### how edit html page
+* header Charest
+```python
+page1_html.Header["charset"]("utf-8")
+```
+
+* header title
+```python
+page1_html.Header["title"]("web site !")
+```
+
+* body title (h1, h2, h3, ...)
+```python
+page1_html.Body["h"](1, "this h1")
+#                    ^ is size (1 to 6)
+```
+
+* Body text
+```python
+page1_html.Body["p"]("this text")
+```
+
+* Body image
+```python
+page1_html.Body["img"]("path or url")
+```
