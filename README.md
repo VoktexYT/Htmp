@@ -12,4 +12,23 @@
 
 ### how install and config
 * For install module, click on green button "code" and download
-* For used module, pick directory htmp and move this in your project
+* To use the module, choose the htmp manager and place it in your project
+* To try, import it into your python file
+
+---
+
+### how use htmp
+* install html module
+```python
+import htmp
+```
+
+* init project
+```python
+project1 = htmp.Web("<path>", "<directory name>")
+```
+
+* create html file
+```python
+page1_htnl = htmp.Html(project1.init("index"))
+```
