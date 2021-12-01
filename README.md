@@ -130,7 +130,7 @@ page1_html.Body["p"](":one: :two: :three: [etc..]", url_a=[one_file, tow_file, t
 import htmp
 
 # create project
-wiki_project = htmp.Web('/home/guertinu/Desktop', 'Wiki_Code')
+wiki_project = htmp.Web('/home/user/Desktop', 'Wiki_Code')
 
 # create 3 html file (home.html), (python.html), (about.html)
 home_html = htmp.Html(wiki_project.init('Home'))
