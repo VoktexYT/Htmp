@@ -97,7 +97,7 @@ page1_html.Body["img"]("path or url")
 |<sup>text|<sub>text|<strong>text|<em>text|<mark>text|<u>text|<strike>text|<a>text|
 
 ---
-####example :
+#### example :
 
 ---
 * I eat **an apple\*\*
@@ -109,7 +109,7 @@ page1_html.Body["img"]("path or url")
 * your \text\ ^is^ very ^^good^^ !
 * your <em>text</em> <sub>is</sub> very <sup>good</sup> !
 ---
-####for link...
+#### for link...
 
 ---
 ```python
