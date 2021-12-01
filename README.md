@@ -124,7 +124,7 @@ page1_html.Body["p"](":one: :two: :three: [etc..]", url_a=[one_file, tow_file, t
 
 ---
 ---
-###[Project Exemple]
+### [Project Example]
 ```python
 # import module
 import htmp
@@ -165,7 +165,7 @@ wiki_project.load(all_file)
 
 ---
 ---
-###[About]
+### [About]
 
 * create by ```WinstonWolf007```
 * version ```4```
