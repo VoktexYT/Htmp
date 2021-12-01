@@ -113,18 +113,59 @@ page1_html.Body["img"]("path or url")
 
 ---
 ```python
-# add parameter 'a_path=' for add html file.
-page1_html.Body["p"]("on :click:", a_path=[page2_html])
+# add parameter 'url_a=' for add html file.
+page1_html.Body["p"]("on :click:", url_a=[page2_html])
 ```
 
 * **Important:** the files will be in the <u>order you defined</u>
 ```python
-page1_html.Body["p"](":one: :two: :three: [etc..]", a_path=[one_file, tow_file, three_file])
+page1_html.Body["p"](":one: :two: :three: [etc..]", url_a=[one_file, tow_file, three_file])
 ```
 
 ---
 ---
-###About
+###[Project Exemple]
+```python
+# import module
+import htmp
+
+# create project
+wiki_project = htmp.Web('/home/guertinu/Desktop', 'Wiki_Code')
+
+# create 3 html file (home.html), (python.html), (about.html)
+home_html = htmp.Html(wiki_project.init('Home'))
+python_html = htmp.Html(wiki_project.init('python'))
+about_html = htmp.Html(wiki_project.init('about'))
+
+# edit home file
+home_html.Header['charset']('utf-8')
+home_html.Header['title']('Home')
+home_html.Body['h'](1, 'Home Page')
+home_html.Body['p']('on **click** for __:about page:__ or __:python page:__', url_a=[about_html, python_html])
+
+# edit python file
+python_html.Header['charset']('utf-8')
+python_html.Header['title']('Python')
+python_html.Body['h'](1, 'Python page')
+python_html.Body['p']('__python__ is **very good** programing #language#')
+python_html.Body['p']('He is use in __the #artificial intelligence#__, __#web# site__, __video #game#__, etc')
+python_html.Body['p']('on **click** for __:home page:__', url_a=[home_html])
+
+# edit about file
+about_html.Header['charset']('utf-8')
+about_html.Header['title']('About')
+about_html.Body['h'](1, 'About page')
+about_html.Body['p']('this project \is created by\ WinstonWolf^^007^^')
+about_html.Body['p']('on **click** for __:home page:__', url_a=[home_html])
+
+# load all file
+all_file = [home_html.source(), python_html.source(), about_html.source()]
+wiki_project.load(all_file)
+```
+
+---
+---
+###[About]
 
 * create by ```WinstonWolf007```
 * version ```4```
