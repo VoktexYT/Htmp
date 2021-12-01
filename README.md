@@ -40,7 +40,7 @@ project1 = htmp.Web("<path>", "<directory name>")
 
 * **create** html file
 ```python
-page1_htnl = htmp.Html(project1.init("<html name file>"))
+page1_html = htmp.Html(project1.init("<html name file>"))
 ```
 
 * put the project variable and do ```'.init()``` to create the html file
