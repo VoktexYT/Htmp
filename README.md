@@ -24,8 +24,10 @@
 ---
 
 * **import** htmp module
+
 ```python
-import htmp
+
+from HTMP import htmp
 ```
 
 ---
@@ -125,9 +127,10 @@ page1_html.Body["p"](":one: :two: :three: [etc..]", url_a=[one_file, tow_file, t
 ---
 ---
 ### [Project Example]
+
 ```python
 # import module
-import htmp
+from HTMP import htmp
 
 # create project
 wiki_project = htmp.Web('/home/user/Desktop', 'Wiki_Code')

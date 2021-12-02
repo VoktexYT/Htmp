@@ -1,6 +1,6 @@
 import os
-import ChangeTxtHtml
-from Error import Error
+import HTMP.ChangeTxtHtml as ChangeTxtHtml
+from HTMP.Error import Error
 
 
 class Web:
@@ -21,13 +21,13 @@ class Web:
                     file.write(codes)
 
     def init(self, name):
-        name = name.replace(".", '')
-        with open(os.getcwd() + '/' + self._project_name + '/' + f'{name}.html', 'w') as file:
+        name = name.split(".")
+        with open(os.getcwd() + '/' + self._project_name + '/' + f'{name[0]}.{name[1]}', 'w') as file:
             file.close()
 
         return {
-            'file-name': name + '.html',
-            'file-path': self._project_path + '/' + name + '.html',
+            'file-name': name[0] + '.' + name[1],
+            'file-path': self._project_path + '/' + name[0] + '.' + name[1],
             'directory-path': self._project_path,
             'directory-name': self._project_name
         }
@@ -79,7 +79,7 @@ class Html:
         generate = f'<meta charset="{content}">'
         self._headerCode[3] = generate
 
-    def _Body_title(self, size: int, content: str, *, id_=None, class_=None, url_a: list = None):
+    def _Body_title(self, size: int, content: str, *, id_='', class_='', url_a: list = None):
         if 6 >= size >= 1:
             content = ChangeTxtHtml.ChangeHtmlTxt(content).htmlspacialchar('<', '>', '/')
             content = ChangeTxtHtml.ChangeHtmlTxt(content).change()
@@ -89,14 +89,14 @@ class Html:
                 for i in url_a:
                     u.append(i.source()[1])
                 content = ChangeTxtHtml.ChangeHtmlTxt(content).changeBalise_a(url_a)
-            generate = f"<h{size}>{content}</h{size}>"
+            generate = f"<h{size} id='{id_}' class='{class_}'>{content}</h{size}>"
             self._bodyCode.insert(self._idx_body, generate)
             self._idx_body += 1
         else:
             self._bodyCode.insert(self._idx_body, Error(0).returnError())
             self._idx_body += 1
 
-    def _Body_paragraph(self, content: str, *, id_=None, class_=None, url_a: list = None):
+    def _Body_paragraph(self, content: str, *, id_='', class_='', url_a: list = None):
         content = ChangeTxtHtml.ChangeHtmlTxt(content).htmlspacialchar('>', '<', '/')
         content = ChangeTxtHtml.ChangeHtmlTxt(content).change()
         if url_a is not None:
@@ -104,15 +104,42 @@ class Html:
             for i in url_a:
                 u.append(i.source()[1])
             content = ChangeTxtHtml.ChangeHtmlTxt(content).changeBalise_a(u)
-        generate = f"<p>{content}</p>"
+        generate = f"<p id='{id_}' class='{class_}'>{content}</p>"
         self._bodyCode.insert(self._idx_body, generate)
         self._idx_body += 1
 
-    def _Body_image(self, url: str, *, id_=None, class_=None):
+    def _Body_image(self, url: str, *, id_='', class_=''):
         url = ChangeTxtHtml.ChangeHtmlTxt(url).htmlspacialchar('>', '<')
-        generate = f"<img src='{url}'>"
+        generate = f"<img src='{url}' id='{id_}' class='{class_}'>"
         self._bodyCode.insert(self._idx_body, generate)
         self._idx_body += 1
 
     def source(self):
         return [self._headerCode + self._bodyCode, self._file_name]
+
+
+class Css:
+
+    def __init__(self, page):
+        self.page = page
+        self._file_path = page['file-path']
+        self._directory_name = page['directory-name']
+        self._directory_path = page['directory-path']
+        self._file_name = page['file-name']
+
+        self.Style = {
+            'color': self._color
+        }
+
+        self._allCible = {
+
+        }
+
+    def _checkCible(self, cible):
+        for i in self._allCible:
+            if i == cible:
+                return True
+        return False
+
+    def _color(self, cible, colorCode):
+        print(self._checkCible(cible), ':', colorCode)
