@@ -18,7 +18,7 @@ class Web:
         for pageCode in code:
             with open(self._project_path + '/' + self._project_name + '/' + pageCode[1], 'a') as file:
                 for codes in pageCode[0]:
-                    file.write(codes)
+                    file.write(str(codes)+'\n')
 
     def init(self, name):
         name = name.split(".")
@@ -61,7 +61,8 @@ class Html:
 
         self.Header = {
             'title': self._Header_title,
-            'charset': self._Header_charset
+            'charset': self._Header_charset,
+            'link': self._Header_link
         }
         self.Body = {
             'h': self._Body_title,
@@ -78,6 +79,10 @@ class Html:
         content = ChangeTxtHtml.ChangeHtmlTxt(content).htmlspacialchar('<', '>', '/')
         generate = f'<meta charset="{content}">'
         self._headerCode[3] = generate
+
+    def _Header_link(self, content: list):
+        for i in content:
+            self._headerCode.insert(6, f'<link rel="stylesheet" type="text/css" href="{i.source()[1]}">')
 
     def _Body_title(self, size: int, content: str, *, id_='', class_='', url_a: list = None):
         if 6 >= size >= 1:
@@ -121,25 +126,42 @@ class Html:
 class Css:
 
     def __init__(self, page):
-        self.page = page
+        self._page = page
         self._file_path = page['file-path']
         self._directory_name = page['directory-name']
         self._directory_path = page['directory-path']
         self._file_name = page['file-name']
 
         self.Style = {
-            'color': self._color
+            'color': self._color,
+            'font-size': self._font_size
         }
 
-        self._allCible = {
-
-        }
+        self._allCible = {}
 
     def _checkCible(self, cible):
-        for i in self._allCible:
-            if i == cible:
-                return True
-        return False
+        return cible in self._allCible
 
     def _color(self, cible, colorCode):
-        print(self._checkCible(cible), ':', colorCode)
+        if self._checkCible(cible):
+            self._allCible[cible].append('color: '+str(colorCode))
+        else:
+            self._allCible[cible] = ['color: '+str(colorCode)]
+
+    def _font_size(self, cible, size):
+        if self._checkCible(cible):
+            self._allCible[cible].append('font-size: '+str(size))
+        else:
+            self._allCible[cible] = ['font-size: '+str(size)]
+
+    def source(self):
+        code = []
+        for key in self._allCible:
+            code.append(key+' {' + ";".join(self._allCible[key]) + '}')
+        return [code, self._file_name]
+
+    def joinHtml(self):
+        return self._file_name
+
+    def displayStyle(self):
+        return self._allCible
