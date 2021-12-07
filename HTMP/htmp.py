@@ -67,7 +67,8 @@ class Html:
         self.Body = {
             'h': self._Body_title,
             'p': self._Body_paragraph,
-            'img': self._Body_image
+            'img': self._Body_image,
+            'div': self._Body_div
         }
 
     def _Header_title(self, content: str):
@@ -84,7 +85,7 @@ class Html:
         for i in content:
             self._headerCode.insert(6, f'<link rel="stylesheet" type="text/css" href="{i.source()[1]}">')
 
-    def _Body_title(self, size: int, content: str, *, id_='', class_='', url_a: list = None):
+    def _Body_title(self, size: int, content: str, id_='', class_='', url_a: list = None):
         if 6 >= size >= 1:
             content = ChangeTxtHtml.ChangeHtmlTxt(content).htmlspacialchar('<', '>', '/')
             content = ChangeTxtHtml.ChangeHtmlTxt(content).change()
@@ -97,11 +98,13 @@ class Html:
             generate = f"<h{size} id='{id_}' class='{class_}'>{content}</h{size}>"
             self._bodyCode.insert(self._idx_body, generate)
             self._idx_body += 1
+            return {'id': '#' + str(id_), 'class': '.' + str(class_), 'struct': generate}
         else:
             self._bodyCode.insert(self._idx_body, Error(0).returnError())
             self._idx_body += 1
+            return {'id': '#' + str(id_), 'class': '.' + str(class_)}
 
-    def _Body_paragraph(self, content: str, *, id_='', class_='', url_a: list = None):
+    def _Body_paragraph(self, content: str, id_='', class_='', url_a: list = None):
         content = ChangeTxtHtml.ChangeHtmlTxt(content).htmlspacialchar('>', '<', '/')
         content = ChangeTxtHtml.ChangeHtmlTxt(content).change()
         if url_a is not None:
@@ -113,9 +116,17 @@ class Html:
         self._bodyCode.insert(self._idx_body, generate)
         self._idx_body += 1
 
-    def _Body_image(self, url: str, *, id_='', class_=''):
+    def _Body_image(self, url: str, id_='', class_=''):
         url = ChangeTxtHtml.ChangeHtmlTxt(url).htmlspacialchar('>', '<')
         generate = f"<img src='{url}' id='{id_}' class='{class_}'>"
+        self._bodyCode.insert(self._idx_body, generate)
+        self._idx_body += 1
+
+    def _Body_div(self, content: list, id_='', class_=''):
+        all_html = []
+        for i in content:
+            all_html.append(i['struct'])
+        generate = f"<div id='{id_}' class='{class_}'>{''.join(all_html)}</div>"
         self._bodyCode.insert(self._idx_body, generate)
         self._idx_body += 1
 
@@ -131,37 +142,24 @@ class Css:
         self._directory_name = page['directory-name']
         self._directory_path = page['directory-path']
         self._file_name = page['file-name']
-
-        self.Style = {
-            'color': self._color,
-            'font-size': self._font_size
-        }
-
         self._allCible = {}
 
-    def _checkCible(self, cible):
-        return cible in self._allCible
+    def _checkCible(self, obj):
+        return obj in self._allCible
 
-    def _color(self, cible, colorCode):
-        if self._checkCible(cible):
-            self._allCible[cible].append('color: '+str(colorCode))
-        else:
-            self._allCible[cible] = ['color: '+str(colorCode)]
-
-    def _font_size(self, cible, size):
-        if self._checkCible(cible):
-            self._allCible[cible].append('font-size: '+str(size))
-        else:
-            self._allCible[cible] = ['font-size: '+str(size)]
+    def Style(self, obj, value: dict):
+        if not obj in self._allCible:
+            self._allCible[obj] = {}
+        for key_value in value:
+            values = value[key_value]
+            self._allCible[obj][key_value] = values
 
     def source(self):
         code = []
-        for key in self._allCible:
-            code.append(key+' {' + ";".join(self._allCible[key]) + '}')
+        code2 = []
+        for key, value in self._allCible.items():
+            for key2, value2 in self._allCible[key].items():
+                code2.append(key2+': '+value2)
+            code.append(key + '{' + ";".join(code2) + "}")
+
         return [code, self._file_name]
-
-    def joinHtml(self):
-        return self._file_name
-
-    def displayStyle(self):
-        return self._allCible
