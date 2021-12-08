@@ -98,11 +98,12 @@ class Html:
             generate = f"<h{size} id='{id_}' class='{class_}'>{content}</h{size}>"
             self._bodyCode.insert(self._idx_body, generate)
             self._idx_body += 1
-            return {'id': '#' + str(id_), 'class': '.' + str(class_), 'struct': generate}
+            return self._returnHtml(id_, class_, generate)
+
         else:
             self._bodyCode.insert(self._idx_body, Error(0).returnError())
             self._idx_body += 1
-            return {'id': '#' + str(id_), 'class': '.' + str(class_)}
+            return {'id': str(id_), 'class': str(class_)}
 
     def _Body_paragraph(self, content: str, id_='', class_='', url_a: list = None):
         content = ChangeTxtHtml.ChangeHtmlTxt(content).htmlspacialchar('>', '<', '/')
@@ -115,23 +116,36 @@ class Html:
         generate = f"<p id='{id_}' class='{class_}'>{content}</p>"
         self._bodyCode.insert(self._idx_body, generate)
         self._idx_body += 1
+        return self._returnHtml(id_, class_, generate)
 
     def _Body_image(self, url: str, id_='', class_=''):
         url = ChangeTxtHtml.ChangeHtmlTxt(url).htmlspacialchar('>', '<')
         generate = f"<img src='{url}' id='{id_}' class='{class_}'>"
         self._bodyCode.insert(self._idx_body, generate)
         self._idx_body += 1
+        return self._returnHtml(id_, class_, generate)
 
     def _Body_div(self, content: list, id_='', class_=''):
+        print(content)
         all_html = []
         for i in content:
             all_html.append(i['struct'])
         generate = f"<div id='{id_}' class='{class_}'>{''.join(all_html)}</div>"
         self._bodyCode.insert(self._idx_body, generate)
         self._idx_body += 1
+        return self._returnHtml(id_, class_, generate)
 
     def source(self):
         return [self._headerCode + self._bodyCode, self._file_name]
+
+    def _returnHtml(self, id_, class_, generate):
+        dict_choise = {
+            "['', '']": {'id': '', 'class': '', 'struct': generate},
+            f"['{id_}', '']": {'id': '#' + str(id_), 'class': '', 'struct': generate},
+            f"['', '{class_}']": {'id': '', 'class': '.' + str(class_), 'struct': generate}
+        }
+        choise = dict_choise.get(str([id_, class_]))
+        return choise if choise is not None else {'id': f'#{id_}', 'class': f'.{class_}', 'struct': generate}
 
 
 class Css:
