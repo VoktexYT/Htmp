@@ -62,13 +62,15 @@ class Html:
         self.Header = {
             'title': self._Header_title,
             'charset': self._Header_charset,
-            'link': self._Header_link
+            'link': self._Header_link,
+            'script': self._Header_script
         }
         self.Body = {
             'h': self._Body_title,
             'p': self._Body_paragraph,
             'img': self._Body_image,
-            'div': self._Body_div
+            'div': self._Body_div,
+            'script': self._Body_script
         }
 
     def _Header_title(self, content: str):
@@ -84,6 +86,14 @@ class Html:
     def _Header_link(self, content: list):
         for i in content:
             self._headerCode.insert(6, f'<link rel="stylesheet" type="text/css" href="{i.source()[1]}">')
+
+    def _Header_script(self, content: list):
+        for i in content:
+            self._headerCode.insert(6, f'<script type="text/javascript" src="{i.source()[1]}"></script>')
+
+    def _Body_script(self, content: list):
+        for i in content:
+            self._bodyCode.insert(1, f'<script type="text/javascript" src="{i.source()[1]}"></script>')
 
     def _Body_title(self, size: int, content: str, id_='', class_='', url_a: list = None):
         if 6 >= size >= 1:
@@ -177,3 +187,31 @@ class Css:
             code.append(key + '{' + ";".join(code2) + "}")
 
         return [code, self._file_name]
+
+
+class Js:
+
+    def __init__(self, page):
+        self._page = page
+        self._file_path = page['file-path']
+        self._directory_name = page['directory-name']
+        self._directory_path = page['directory-path']
+        self._file_name = page['file-name']
+        self._allCodeForInsert = []
+        self._allCodeExisting = None
+
+    def Event(self, event, obj, code: list):
+        print(code)
+        code.insert(0, "\t// this is '"+event+"' event")
+        print(code)
+        code = ';\n\t'.join(code)
+        self._allCodeForInsert.append('document.querySelector("'+obj+'").addEventListener("'+event+'", () => {\n'+code+'\n});')
+
+    def alert(self, content: str):
+        return f'alert("{content}")'
+
+    def consoleLog(self, content: str):
+        return f'console.log("{content}")'
+
+    def source(self):
+        return [self._allCodeForInsert, self._file_name]
