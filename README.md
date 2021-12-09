@@ -285,7 +285,14 @@ script_js.Event(
 ### [About]
 
 * create by ```WinstonWolf007```
-* version ```4```
+* version ```9```
 
 ---
-* when to use this module ? ```For write speed html code```
+* when to use this module ?
+```
+  #1 For write speed code
+  #2 For the simply syntax
+  #3 For avoid bug and error
+  #4 For good struct your code
+  #5 For reduce code line
+  ```
