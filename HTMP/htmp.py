@@ -100,7 +100,6 @@ class Html:
             content = ChangeTxtHtml.ChangeHtmlTxt(content).htmlspacialchar('<', '>', '/')
             content = ChangeTxtHtml.ChangeHtmlTxt(content).change()
             if url_a is not None:
-                print('in')
                 u = []
                 for i in url_a:
                     u.append(i.source()[1])
@@ -136,7 +135,6 @@ class Html:
         return self._returnHtml(id_, class_, generate)
 
     def _Body_div(self, content: list, id_='', class_=''):
-        print(content)
         all_html = []
         for i in content:
             all_html.append(i['struct'])
@@ -200,18 +198,35 @@ class Js:
         self._allCodeForInsert = []
         self._allCodeExisting = None
 
-    def Event(self, event, obj, code: list):
-        print(code)
-        code.insert(0, "\t// this is '"+event+"' event")
-        print(code)
-        code = ';\n\t'.join(code)
-        self._allCodeForInsert.append('document.querySelector("'+obj+'").addEventListener("'+event+'", () => {\n'+code+'\n});')
+    def Event(self, event, obj, code: list, switch: list = False):
+        if not switch:
+            print(type(code))
+            code.insert(0, "\t// this is '" + event + "' event")
+            code = ';\n\t'.join(code)
+            code += ';'
+            if obj == 'window':
+                self._allCodeForInsert.append('window.addEventListener("'+event+'", () => {\n'+code+'\n});')
+            else:
+                self._allCodeForInsert.append('document.querySelector("'+obj+'").addEventListener("'+event+'", () => {\n'+code+'\n});')
+        else:
+            code.insert(0, f"\t// this is '{event}' event")
+            switch.insert(0, f"\t// this is reflected '{event}' event")
+            code = ';\n\t\t'.join(code)
+            code += ';'
+            switch = ';\n\t\t'.join(switch)
+            switch += ';'
+            varName = event+'_'+obj[1:]
+            generate = 'let '+varName+' = true;\ndocument.querySelector("'+obj+'").addEventListener("'+event+'", () => {\n\tif ('+varName+')\n\t{\n\t\t'+varName+' = false;\n\n\t'+code+'\n\t}\n\telse\n\t{\n\t\t'+varName+' = true;\n\n\t'+switch+'\n\t}\n});'
+            self._allCodeForInsert.append(generate)
 
     def alert(self, content: str):
         return f'alert("{content}")'
 
     def consoleLog(self, content: str):
         return f'console.log("{content}")'
+
+    def changeHtml(self, target, content: str):
+        return f'document.querySelector("{target}").innerHTML = "{content}"'
 
     def source(self):
         return [self._allCodeForInsert, self._file_name]
