@@ -95,7 +95,7 @@ class Html:
         for i in content:
             self._bodyCode.insert(1, f'\t<script type="text/javascript" src="{i.source()[1]}"></script>')
 
-    def _Body_title(self, size: int, content: str, id_='', class_='', url_a: list = None):
+    def _Body_title(self, size: int, content: str, id_='', class_='', div=False, url_a: list = None):
         if 6 >= size >= 1:
             content = ChangeTxtHtml.ChangeHtmlTxt(content).htmlspacialchar('<', '>', '/')
             content = ChangeTxtHtml.ChangeHtmlTxt(content).change()
@@ -105,16 +105,18 @@ class Html:
                     u.append(i.source()[1])
                 content = ChangeTxtHtml.ChangeHtmlTxt(content).changeBalise_a(url_a)
             generate = f"\t<h{size} id='{id_}' class='{class_}'>{content}</h{size}>"
-            self._bodyCode.insert(self._idx_body, generate)
-            self._idx_body += 1
+            if not div:
+                self._bodyCode.insert(self._idx_body, generate)
+                self._idx_body += 1
             return self._returnHtml(id_, class_, generate)
 
         else:
-            self._bodyCode.insert(self._idx_body, Error(0).returnError())
-            self._idx_body += 1
+            if not div:
+                self._bodyCode.insert(self._idx_body, Error(0).returnError())
+                self._idx_body += 1
             return {'id': str(id_), 'class': str(class_)}
 
-    def _Body_paragraph(self, content: str, id_='', class_='', url_a: list = None):
+    def _Body_paragraph(self, content: str, id_='', class_='', div=False, url_a: list = None):
         content = ChangeTxtHtml.ChangeHtmlTxt(content).htmlspacialchar('>', '<', '/')
         content = ChangeTxtHtml.ChangeHtmlTxt(content).change()
         if url_a is not None:
@@ -122,25 +124,31 @@ class Html:
             for i in url_a:
                 u.append(i.source()[1])
             content = ChangeTxtHtml.ChangeHtmlTxt(content).changeBalise_a(u)
+
         generate = f"\t<p id='{id_}' class='{class_}'>{content}</p>"
-        self._bodyCode.insert(self._idx_body, generate)
-        self._idx_body += 1
+
+        if not div:
+            self._bodyCode.insert(self._idx_body, generate)
+            self._idx_body += 1
+
         return self._returnHtml(id_, class_, generate)
 
-    def _Body_image(self, url: str, id_='', class_=''):
+    def _Body_image(self, url: str, id_='', class_='', div=False):
         url = ChangeTxtHtml.ChangeHtmlTxt(url).htmlspacialchar('>', '<')
         generate = f"\t<img src='{url}' id='{id_}' class='{class_}'>"
-        self._bodyCode.insert(self._idx_body, generate)
-        self._idx_body += 1
+        if not div:
+            self._bodyCode.insert(self._idx_body, generate)
+            self._idx_body += 1
         return self._returnHtml(id_, class_, generate)
 
-    def _Body_div(self, content: list, id_='', class_=''):
+    def _Body_div(self, content: list, id_='', class_='', div=False):
         all_html = []
         for i in content:
             all_html.append(i['struct'])
         generate = f"\t<div id='{id_}' class='{class_}'>{''.join(all_html)}</div>"
-        self._bodyCode.insert(self._idx_body, generate)
-        self._idx_body += 1
+        if not div:
+            self._bodyCode.insert(self._idx_body, generate)
+            self._idx_body += 1
         return self._returnHtml(id_, class_, generate)
 
     def source(self):
@@ -175,7 +183,6 @@ class Css:
         elif not event and not obj in self._allCible:
             self._allCible[obj] = {}
         if event:
-            print(f'detected event !\n{str(event)=}\n{str(obj)=}\n{str(obj)+":"+str(event)}')
             newName = str(obj)+":"+str(event)
         for key_value in value:
             values = value[key_value]
