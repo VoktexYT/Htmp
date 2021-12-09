@@ -48,9 +48,9 @@ class Html:
             '<!DOCTYPE html>',
             '<html>',
             '<head>',
-            f'<meta charset="{self._charset}">',
-            '<meta name="viewport" content="width=device-width, initial-scale=1">',
-            f'<title>{self._page}</title>',
+            f'\t<meta charset="{self._charset}">',
+            '\t<meta name="viewport" content="width=device-width, initial-scale=1">',
+            f'\t<title>{self._page}</title>',
             '</head>'
         ]
         self._bodyCode = [
@@ -75,17 +75,17 @@ class Html:
 
     def _Header_title(self, content: str):
         content = ChangeTxtHtml.ChangeHtmlTxt(content).htmlspacialchar('<', '>')
-        generate = f"<title>{content}</title>"
+        generate = f"\t<title>{content}</title>"
         self._headerCode[5] = generate
 
     def _Header_charset(self, content: str):
         content = ChangeTxtHtml.ChangeHtmlTxt(content).htmlspacialchar('<', '>', '/')
-        generate = f'<meta charset="{content}">'
+        generate = f'\t<meta charset="{content}">'
         self._headerCode[3] = generate
 
     def _Header_link(self, content: list):
         for i in content:
-            self._headerCode.insert(6, f'<link rel="stylesheet" type="text/css" href="{i.source()[1]}">')
+            self._headerCode.insert(6, f'\t<link rel="stylesheet" type="text/css" href="{i.source()[1]}">')
 
     def _Header_script(self, content: list):
         for i in content:
@@ -93,7 +93,7 @@ class Html:
 
     def _Body_script(self, content: list):
         for i in content:
-            self._bodyCode.insert(1, f'<script type="text/javascript" src="{i.source()[1]}"></script>')
+            self._bodyCode.insert(1, f'\t<script type="text/javascript" src="{i.source()[1]}"></script>')
 
     def _Body_title(self, size: int, content: str, id_='', class_='', url_a: list = None):
         if 6 >= size >= 1:
@@ -104,7 +104,7 @@ class Html:
                 for i in url_a:
                     u.append(i.source()[1])
                 content = ChangeTxtHtml.ChangeHtmlTxt(content).changeBalise_a(url_a)
-            generate = f"<h{size} id='{id_}' class='{class_}'>{content}</h{size}>"
+            generate = f"\t<h{size} id='{id_}' class='{class_}'>{content}</h{size}>"
             self._bodyCode.insert(self._idx_body, generate)
             self._idx_body += 1
             return self._returnHtml(id_, class_, generate)
@@ -122,14 +122,14 @@ class Html:
             for i in url_a:
                 u.append(i.source()[1])
             content = ChangeTxtHtml.ChangeHtmlTxt(content).changeBalise_a(u)
-        generate = f"<p id='{id_}' class='{class_}'>{content}</p>"
+        generate = f"\t<p id='{id_}' class='{class_}'>{content}</p>"
         self._bodyCode.insert(self._idx_body, generate)
         self._idx_body += 1
         return self._returnHtml(id_, class_, generate)
 
     def _Body_image(self, url: str, id_='', class_=''):
         url = ChangeTxtHtml.ChangeHtmlTxt(url).htmlspacialchar('>', '<')
-        generate = f"<img src='{url}' id='{id_}' class='{class_}'>"
+        generate = f"\t<img src='{url}' id='{id_}' class='{class_}'>"
         self._bodyCode.insert(self._idx_body, generate)
         self._idx_body += 1
         return self._returnHtml(id_, class_, generate)
@@ -138,7 +138,7 @@ class Html:
         all_html = []
         for i in content:
             all_html.append(i['struct'])
-        generate = f"<div id='{id_}' class='{class_}'>{''.join(all_html)}</div>"
+        generate = f"\t<div id='{id_}' class='{class_}'>{''.join(all_html)}</div>"
         self._bodyCode.insert(self._idx_body, generate)
         self._idx_body += 1
         return self._returnHtml(id_, class_, generate)
@@ -169,12 +169,18 @@ class Css:
     def _checkCible(self, obj):
         return obj in self._allCible
 
-    def Style(self, obj, value: dict):
-        if not obj in self._allCible:
+    def Style(self, obj, value: dict, event=False):
+        if event and not obj+":"+str(event) in self._allCible:
+            self._allCible[obj+":"+str(event)] = {}
+        elif not event and not obj in self._allCible:
             self._allCible[obj] = {}
+        if event:
+            print(f'detected event !\n{str(event)=}\n{str(obj)=}\n{str(obj)+":"+str(event)}')
+            newName = str(obj)+":"+str(event)
         for key_value in value:
             values = value[key_value]
-            self._allCible[obj][key_value] = values
+            if event: self._allCible[newName][key_value] = values
+            else: self._allCible[obj][key_value] = values
 
     def source(self):
         code = []
@@ -182,7 +188,10 @@ class Css:
         for key, value in self._allCible.items():
             for key2, value2 in self._allCible[key].items():
                 code2.append(key2+': '+value2)
-            code.append(key + '{' + ";".join(code2) + "}")
+            comment = f'/*Change style of {key}*/'
+            if ':' in key:
+                comment = f"/*Change style of '{key.split(':')[0]}' if event '{key.split(':')[1]}:' is True*/"
+            code.append(comment + "\n" + key + ' {\n\t' + ";\n\t".join(code2) + "\n}\n")
 
         return [code, self._file_name]
 
@@ -216,7 +225,7 @@ class Js:
             switch = ';\n\t\t'.join(switch)
             switch += ';'
             varName = event+'_'+obj[1:]
-            generate = 'let '+varName+' = true;\ndocument.querySelector("'+obj+'").addEventListener("'+event+'", () => {\n\tif ('+varName+')\n\t{\n\t\t'+varName+' = false;\n\n\t'+code+'\n\t}\n\telse\n\t{\n\t\t'+varName+' = true;\n\n\t'+switch+'\n\t}\n});'
+            generate = 'let '+varName+' = true;\n\n// he listen event '+event+'\ndocument.querySelector("'+obj+'").addEventListener("'+event+'", () => {\n\tif ('+varName+')\n\t{\n\t\t'+varName+' = false;\n\n\t'+code+'\n\t}\n\telse\n\t{\n\t\t'+varName+' = true;\n\n\t'+switch+'\n\t}\n});'
             self._allCodeForInsert.append(generate)
 
     def alert(self, content: str):
@@ -227,6 +236,9 @@ class Js:
 
     def changeHtml(self, target, content: str):
         return f'document.querySelector("{target}").innerHTML = "{content}"'
+
+    def changeCss(self, target, property_, newValue):
+        return f'document.querySelector("{target}").style.{property_} = "{newValue}"'
 
     def source(self):
         return [self._allCodeForInsert, self._file_name]
