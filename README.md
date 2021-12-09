@@ -258,6 +258,7 @@ style_css.Style(btn['id'], {
     'transition': '0.3s'
 })
 
+# change style if hover
 style_css.Style(btn['id'], {
     'color': 'red'
 }, 'hover')
