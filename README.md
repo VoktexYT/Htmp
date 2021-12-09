@@ -2,11 +2,19 @@
 
 ---
 ---
-* **how install and config**
-* **how use htmp**
-* **how edit html code** 
-* **string shortcut**
-* **project example**
+* **install and config**
+* **init basic project with htmp**
+* 
+* **how edit html code**
+* **how edit css code**
+* **how edit Js code**
+* 
+* **html string shortcut**
+* **all html markup**
+* **all Js event**
+* **all css event**
+* 
+* **code example**
 * **about**
 ---
 ---
@@ -21,12 +29,9 @@
 
 ### [how use htmp ?]
 
----
 
 * **import** htmp module
-
 ```python
-
 from HTMP import htmp
 ```
 
@@ -61,7 +66,11 @@ project1.load(all_file)
 ---
 ---
 
-### [how edit html page ?]
+### [edit html page]
+* create html file
+```python
+page1_html = htmp.Html(project1.init("index.html"))
+```
 * put the Charest
 ```python
 page1_html.Header["charset"]("utf-8")
@@ -70,6 +79,21 @@ page1_html.Header["charset"]("utf-8")
 * put the title in the Header
 ```python
 page1_html.Header["title"]("web site !")
+```
+
+* put the css link
+```python
+page1_html.Header["link"]([style1_css])
+#                             ^ all variables which are css pages
+```
+
+* put the Js link
+```python
+# the script is situated IN THE HEADER
+page1_html.Header["script"]([script1_js])
+
+# the script is situated IN THE BODY
+page1_html.Body["script"]([script1_js])
 ```
 
 * put the title in the Body (h1, h2, h3, ...)
@@ -88,6 +112,89 @@ page1_html.Body["p"]("this text")
 page1_html.Body["img"]("path or url")
 ```
 
+* put **id** and **class**
+```python
+page1_html.Body["p"]('hello', id_='text')
+page1_html.Body["p"]('bey', class_='txt')
+page1_html.Body["p"]('this text', id_='text', class_='txt')
+```
+
+---
+---
+
+### [edit css page]
+* create css page
+```python
+style_css = htmp.Css(project1.init("style.css"))
+```
+
+* edit css
+```python
+style_css.Style('id or class element', {
+    'all css function': 'value',
+    # example
+    'color': 'red'
+})
+```
+
+* add event
+```python
+style_css.Style('id or class element', {
+    'color': 'red'
+}, 'there event') # example: 'hover', 'focus', etc
+```
+
+* how get id or class ?
+```python
+textPage = page1_html.Body["p"]('hello', id_='text')
+
+style_css.Style(textPage['id'], {
+    [...]
+})
+
+# or (same thing with class) ('.name' or 'var['class']')
+
+page1_html.Body["p"]('hello', id_='text')
+
+style_css.Style('#text', {
+    [...]
+})
+
+```
+
+---
+---
+
+### [edit Js page]
+
+* create js page
+```python
+script_js = htmp.Js(project1.init("script.js"))
+```
+
+* add event
+```python
+script_js.Event(
+    '<event name>',
+    '<who will trigger the event>',
+    ['all the script that will be executed if the event is detected']
+)
+```
+
+* add reflective code
+```python
+script_js.Event(
+    '<event name>',
+    '<who will trigger the event>',
+    ['all the script that will be executed if the event is detected'],
+    ['the reflective code']
+)
+```
+
+* what is the reflective code ?
+```
+the reflective code is the code that will be run to Conversely the 'normal' code
+```
 ---
 ---
 
@@ -126,7 +233,7 @@ page1_html.Body["p"](":one: :two: :three: [etc..]", url_a=[one_file, tow_file, t
 
 ---
 ---
-### [Project Example]
+### [code example]
 
 ```python
 # import module
@@ -135,35 +242,41 @@ from HTMP import htmp
 # create project
 wiki_project = htmp.Web('/home/user/Desktop', 'Wiki_Code')
 
-# create 3 html file (home.html), (python.html), (about.html)
-home_html = htmp.Html(wiki_project.init('Home'))
-python_html = htmp.Html(wiki_project.init('python'))
-about_html = htmp.Html(wiki_project.init('about'))
+# create 3 file
+index_html = htmp.Html(wiki_project.init('index.html'))
+style_css = htmp.Css(wiki_project.init('style.css'))
+script_js = htmp.Js(wiki_project.init('script.js'))
 
-# edit home file
-home_html.Header['charset']('utf-8')
-home_html.Header['title']('Home')
-home_html.Body['h'](1, 'Home Page')
-home_html.Body['p']('on **click** for __:about page:__ or __:python page:__', url_a=[about_html, python_html])
+# edit html file
+btn = index_html.Body['h'](1, 'click me', id_='btn')
+txt = index_html.Body['p']('this text')
 
-# edit python file
-python_html.Header['charset']('utf-8')
-python_html.Header['title']('Python')
-python_html.Body['h'](1, 'Python page')
-python_html.Body['p']('__python__ is **very good** programing #language#')
-python_html.Body['p']('He is use in __the #artificial intelligence#__, __#web# site__, __video #game#__, etc')
-python_html.Body['p']('on **click** for __:home page:__', url_a=[home_html])
+# edit css file
+style_css.Style(btn['id'], {
+    'color': 'grey',
+    'background-color': 'black',
+    'transition': '0.3s'
+})
 
-# edit about file
-about_html.Header['charset']('utf-8')
-about_html.Header['title']('About')
-about_html.Body['h'](1, 'About page')
-about_html.Body['p']('this project \is created by\ WinstonWolf^^007^^')
-about_html.Body['p']('on **click** for __:home page:__', url_a=[home_html])
+style_css.Style(btn['id'], {
+    'color': 'red'
+}, 'hover')
 
-# load all file
-all_file = [home_html.source(), python_html.source(), about_html.source()]
-wiki_project.load(all_file)
+# edit Js file
+script_js.Event(
+    'click',
+    btn['id'],
+    # this normal if onclick a fist time: run code
+    [
+        script_js.changeHtml(txt['id'], 'this very good text'),
+        script_js.changeCss(txt['id'], 'color', 'green')
+    ],
+    # this reflected if onclick a second time: run code
+    [
+        script_js.changeHtml(txt['id'], 'this very bad text'),
+        script_js.changeCss(txt['id'], 'color', 'red')
+    ]
+)
 ```
 
 ---
