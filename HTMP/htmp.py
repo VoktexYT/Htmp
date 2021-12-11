@@ -1,7 +1,11 @@
 import os
 import HTMP.ChangeTxtHtml as ChangeTxtHtml
 from HTMP.Error import Error
+import time
+import string
 
+time_ = 0.3
+defaultJs = []
 
 class Web:
 
@@ -14,16 +18,37 @@ class Web:
         except FileExistsError:
             pass
 
+        print(f"project creation: \033[92mOK\033[0m")
+        time.sleep(time_)
+
     def load(self, code: list):
-        for pageCode in code:
-            with open(self._project_path + '/' + self._project_name + '/' + pageCode[1], 'a') as file:
-                for codes in pageCode[0]:
-                    file.write(str(codes)+'\n')
+            for pageCode in code:
+                try:
+                    with open(self._project_path + '/' + self._project_name + '/' + pageCode[1], 'a') as file:
+                        for codes in pageCode[0]:
+                            file.write(str(codes)+'\n')
+                    print(f"loading file '{pageCode[1]}': \033[92mOK\033[0m")
+                    time.sleep(time_)
+                except Exception as e:
+                    print(f"loading file '{pageCode[1]}': \033[92m"+str(type(e)).split("'")[1]+"\033[0m")
 
     def init(self, name):
-        name = name.split(".")
-        with open(os.getcwd() + '/' + self._project_name + '/' + f'{name[0]}.{name[1]}', 'w') as file:
-            file.close()
+        try:
+            name = name.split(".")
+            check = string.ascii_letters + '0123456789' + '_'
+            for i1 in name[0]:
+                if i1 not in check:
+                    raise SyntaxError
+            for i2 in name[1]:
+                if i2 not in check:
+                    raise SyntaxError
+
+            with open(os.getcwd() + '/' + self._project_name + '/' + f'{name[0]}.{name[1]}', 'w') as file:
+                file.close()
+            print(f"creating '{'.'.join(name)}' file: \033[92mOK\033[0m")
+            time.sleep(time_)
+        except Exception as e:
+            print(f"creating '{'.'.join(name)}' file: \033[91m" + str(type(e)).split("'")[1] + "\033[0m")
 
         return {
             'file-name': name[0] + '.' + name[1],
@@ -70,7 +95,9 @@ class Html:
             'p': self._Body_paragraph,
             'img': self._Body_image,
             'div': self._Body_div,
-            'script': self._Body_script
+            'script': self._Body_script,
+            'input': self._Body_input,
+            'form': self._Body_form
         }
 
     def _Header_title(self, content: str):
@@ -95,7 +122,7 @@ class Html:
         for i in content:
             self._bodyCode.insert(1, f'\t<script type="text/javascript" src="{i.source()[1]}"></script>')
 
-    def _Body_title(self, size: int, content: str, id_='', class_='', div=False, url_a: list = None):
+    def _Body_title(self, size: int, content: str, id_='', class_='', GET=False, url_a: list = None):
         if 6 >= size >= 1:
             content = ChangeTxtHtml.ChangeHtmlTxt(content).htmlspacialchar('<', '>', '/')
             content = ChangeTxtHtml.ChangeHtmlTxt(content).change()
@@ -105,56 +132,66 @@ class Html:
                     u.append(i.source()[1])
                 content = ChangeTxtHtml.ChangeHtmlTxt(content).changeBalise_a(url_a)
             generate = f"\t<h{size} id='{id_}' class='{class_}'>{content}</h{size}>"
-            if not div:
-                self._bodyCode.insert(self._idx_body, generate)
-                self._idx_body += 1
-            return self._returnHtml(id_, class_, generate)
+            return self._returnHtml(id_, class_, generate, GET)
 
         else:
-            if not div:
+            if not GET:
                 self._bodyCode.insert(self._idx_body, Error(0).returnError())
                 self._idx_body += 1
             return {'id': str(id_), 'class': str(class_)}
 
-    def _Body_paragraph(self, content: str, id_='', class_='', div=False, url_a: list = None):
+    def _Body_paragraph(self, content: str, id_='', class_='', GET=False, url_a: list = None):
         content = ChangeTxtHtml.ChangeHtmlTxt(content).htmlspacialchar('>', '<', '/')
         content = ChangeTxtHtml.ChangeHtmlTxt(content).change()
         if url_a is not None:
             u = []
             for i in url_a:
-                u.append(i.source()[1])
+                if 'http' in i:
+                    u.append(i)
+                else:
+                    u.append(i.source()[1])
             content = ChangeTxtHtml.ChangeHtmlTxt(content).changeBalise_a(u)
 
         generate = f"\t<p id='{id_}' class='{class_}'>{content}</p>"
+        return self._returnHtml(id_, class_, generate, GET)
 
-        if not div:
-            self._bodyCode.insert(self._idx_body, generate)
-            self._idx_body += 1
-
-        return self._returnHtml(id_, class_, generate)
-
-    def _Body_image(self, url: str, id_='', class_='', div=False):
+    def _Body_image(self, url: str, id_='', class_='', GET=False):
         url = ChangeTxtHtml.ChangeHtmlTxt(url).htmlspacialchar('>', '<')
         generate = f"\t<img src='{url}' id='{id_}' class='{class_}'>"
-        if not div:
-            self._bodyCode.insert(self._idx_body, generate)
-            self._idx_body += 1
-        return self._returnHtml(id_, class_, generate)
+        return self._returnHtml(id_, class_, generate, GET)
 
-    def _Body_div(self, content: list, id_='', class_='', div=False):
+    def _Body_div(self, content: list, id_='', class_='', GET=False):
         all_html = []
         for i in content:
             all_html.append(i['struct'])
         generate = f"\t<div id='{id_}' class='{class_}'>{''.join(all_html)}</div>"
-        if not div:
-            self._bodyCode.insert(self._idx_body, generate)
-            self._idx_body += 1
-        return self._returnHtml(id_, class_, generate)
+        return self._returnHtml(id_, class_, generate, GET)
+
+    def _Body_input(self, type_, property_: dict = False, id_='', class_='', GET=False):
+        all_prop = []
+        if property_:
+            for key in property_:
+                all_prop.append(f'{str(key)}="{str(property_[key])}"')
+        generate = f'<input type="{type_}" id="{id_}" class="{class_}" {" ".join(all_prop)}>'
+        return self._returnHtml(id_, class_, generate, GET)
+
+    def _Body_form(self, action, method, input_: list, GET=False, id_='', class_=''):
+        all_input = []
+        for i in input_:
+            all_input.append(i['struct'])
+        generate = f'<form action="{action}" method="{method}">\n\t'+"\n\t".join(all_input)+'\n</form>'
+        return self._returnHtml(id_, class_, generate, GET)
 
     def source(self):
+        for i in defaultJs:
+            self._bodyCode.insert(self._idx_body, i)
+            self._idx_body += 1
         return [self._headerCode + self._bodyCode, self._file_name]
 
-    def _returnHtml(self, id_, class_, generate):
+    def _returnHtml(self, id_, class_, generate, GET: bool):
+        if not GET:
+            self._bodyCode.insert(self._idx_body, generate)
+            self._idx_body += 1
         dict_choise = {
             "['', '']": {'id': '', 'class': '', 'struct': generate},
             f"['{id_}', '']": {'id': '#' + str(id_), 'class': '', 'struct': generate},
@@ -191,15 +228,16 @@ class Css:
 
     def source(self):
         code = []
-        code2 = []
+        #code2 = []
         for key, value in self._allCible.items():
-            for key2, value2 in self._allCible[key].items():
-                code2.append(key2+': '+value2)
-            comment = f'/*Change style of {key}*/'
             if ':' in key:
-                comment = f"/*Change style of '{key.split(':')[0]}' if event '{key.split(':')[1]}:' is True*/"
-            code.append(comment + "\n" + key + ' {\n\t' + ";\n\t".join(code2) + "\n}\n")
-
+                code.append(f"/*change style of '{key.split(':')[0]}' if event '{key.split(':')[1]}:' is True*/")
+            else:
+                code.append(f'/*change style of {key}*/')
+            code.append(key+' {')
+            for key2, value2 in self._allCible[key].items():
+                code.append('\t' + str(key2)+': '+ str(value2)+';')
+            code.append('}\n')
         return [code, self._file_name]
 
 
@@ -213,6 +251,7 @@ class Js:
         self._file_name = page['file-name']
         self._allCodeForInsert = []
         self._allCodeExisting = None
+        self._idx_prompt = 0
 
     def Event(self, event, obj, code: list, switch: list = False):
         if not switch:
@@ -235,17 +274,47 @@ class Js:
             generate = 'let '+varName+' = true;\n\n// he listen event '+event+'\ndocument.querySelector("'+obj+'").addEventListener("'+event+'", () => {\n\tif ('+varName+')\n\t{\n\t\t'+varName+' = false;\n\n\t'+code+'\n\t}\n\telse\n\t{\n\t\t'+varName+' = true;\n\n\t'+switch+'\n\t}\n});'
             self._allCodeForInsert.append(generate)
 
-    def alert(self, content: str):
-        return f'alert("{content}")'
-
-    def consoleLog(self, content: str):
-        return f'console.log("{content}")'
-
     def changeHtml(self, target, content: str):
         return f'document.querySelector("{target}").innerHTML = "{content}"'
 
-    def changeCss(self, target, property_, newValue):
-        return f'document.querySelector("{target}").style.{property_} = "{newValue}"'
+    def changeCss(self, target, newValue: dict):
+        allStyle = []
+        for key in newValue:
+            value = newValue[key]
+            allStyle.append(f'document.querySelector("{target}").style.{key} = "{value}"')
+        return "\n".join(allStyle)
+
+    def changeProperty(self, target, property):
+        prop = {
+            '#': f'document.querySelector("{target}").id = "{property[1:]}"',
+            '.': f'document.querySelector("{target}").className = "{property[1:]}"'
+        }
+
+        return prop.get(property[0]) if not None else 'Error'
 
     def source(self):
         return [self._allCodeForInsert, self._file_name]
+
+    def debug(self, command):
+        getKey = {
+            'consoleLog': self._consoleLog,
+            'alert': self._alert,
+            'prompt': self._prompt,
+            'htmlLog': self._htmlLog
+        }
+
+        return getKey.get(command)
+
+    def _alert(self, content: str):
+        generate = f'alert("{content}");'
+        self._allCodeForInsert.append(generate)
+        return generate
+
+    def _consoleLog(self, content: str):
+        generate = f'console.log("{content}");'
+        self._allCodeForInsert.append(generate)
+        return generate
+
+    def _htmlLog(self, content: str):
+        generate = f'<p>{content}</p>'
+        defaultJs.append(generate)
