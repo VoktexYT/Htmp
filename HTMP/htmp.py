@@ -8,47 +8,53 @@ time_ = 0.3
 defaultJs = []
 
 class Web:
-
-    def __init__(self, project_path, project_name):
+    def __init__(self, project_path, project_name, debug=False):
         self._project_path = project_path
         self._project_name = project_name
+        self._debug = debug
         os.chdir(self._project_path)
         try:
             os.mkdir(self._project_name)
         except FileExistsError:
             pass
+        if self._debug:
+            print(f"project creation: \033[92mOK\033[0m")
+            time.sleep(time_)
 
-        print(f"project creation: \033[92mOK\033[0m")
-        time.sleep(time_)
-
-    def load(self, code: list):
+    def load(self, *code):
             for pageCode in code:
                 try:
+                    pageCode = pageCode.source()
                     with open(self._project_path + '/' + self._project_name + '/' + pageCode[1], 'a') as file:
                         for codes in pageCode[0]:
                             file.write(str(codes)+'\n')
-                    print(f"loading file '{pageCode[1]}': \033[92mOK\033[0m")
-                    time.sleep(time_)
+                    if self._debug:
+                        print(f"loading file '{pageCode[1]}': \033[92mOK\033[0m")
+                        time.sleep(time_)
                 except Exception as e:
-                    print(f"loading file '{pageCode[1]}': \033[92m"+str(type(e)).split("'")[1]+"\033[0m")
+                    if self._debug:
+                        print(f"loading file '{pageCode[1]}': \033[92m"+str(type(e)).split("'")[1]+"\033[0m")
 
     def init(self, name):
         try:
             name = name.split(".")
-            check = string.ascii_letters + '0123456789' + '_'
-            for i1 in name[0]:
-                if i1 not in check:
-                    raise SyntaxError
-            for i2 in name[1]:
-                if i2 not in check:
-                    raise SyntaxError
+            if self._debug:
+                check = string.ascii_letters + '0123456789' + '_'
+                for i1 in name[0]:
+                    if i1 not in check:
+                        raise SyntaxError
+                for i2 in name[1]:
+                    if i2 not in check:
+                        raise SyntaxError
 
             with open(os.getcwd() + '/' + self._project_name + '/' + f'{name[0]}.{name[1]}', 'w') as file:
                 file.close()
-            print(f"creating '{'.'.join(name)}' file: \033[92mOK\033[0m")
-            time.sleep(time_)
+            if self._debug:
+                print(f"creating '{'.'.join(name)}' file: \033[92mOK\033[0m")
+                time.sleep(time_)
         except Exception as e:
-            print(f"creating '{'.'.join(name)}' file: \033[91m" + str(type(e)).split("'")[1] + "\033[0m")
+            if self._debug:
+                print(f"creating '{'.'.join(name)}' file: \033[91m" + str(type(e)).split("'")[1] + "\033[0m")
 
         return {
             'file-name': name[0] + '.' + name[1],
@@ -110,15 +116,15 @@ class Html:
         generate = f'\t<meta charset="{content}">'
         self._headerCode[3] = generate
 
-    def _Header_link(self, content: list):
+    def _Header_link(self, *content):
         for i in content:
             self._headerCode.insert(6, f'\t<link rel="stylesheet" type="text/css" href="{i.source()[1]}">')
 
-    def _Header_script(self, content: list):
+    def _Header_script(self, *content):
         for i in content:
             self._headerCode.insert(6, f'<script type="text/javascript" src="{i.source()[1]}"></script>')
 
-    def _Body_script(self, content: list):
+    def _Body_script(self, *content):
         for i in content:
             self._bodyCode.insert(1, f'\t<script type="text/javascript" src="{i.source()[1]}"></script>')
 
@@ -295,26 +301,20 @@ class Js:
     def source(self):
         return [self._allCodeForInsert, self._file_name]
 
-    def debug(self, command):
-        getKey = {
-            'consoleLog': self._consoleLog,
-            'alert': self._alert,
-            'prompt': self._prompt,
-            'htmlLog': self._htmlLog
-        }
-
-        return getKey.get(command)
-
-    def _alert(self, content: str):
+    def alert(self, content: str, GET=False):
         generate = f'alert("{content}");'
-        self._allCodeForInsert.append(generate)
+        if not GET:
+            self._allCodeForInsert.append(generate)
         return generate
 
-    def _consoleLog(self, content: str):
+    def consoleLog(self, content: str, GET=False):
         generate = f'console.log("{content}");'
-        self._allCodeForInsert.append(generate)
+        if not GET:
+            self._allCodeForInsert.append(generate)
         return generate
 
-    def _htmlLog(self, content: str):
+    def htmlLog(self, content: str, GET=False):
         generate = f'<p>{content}</p>'
-        defaultJs.append(generate)
+        if not GET:
+            defaultJs.append(generate)
+        return generate
