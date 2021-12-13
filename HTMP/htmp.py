@@ -181,13 +181,6 @@ class Html:
         generate = f'<input type="{type_}" id="{id_}" class="{class_}" {" ".join(all_prop)}>'
         return self._returnHtml(id_, class_, generate, GET)
 
-    def _Body_form(self, action, method, input_: list, GET=False, id_='', class_=''):
-        all_input = []
-        for i in input_:
-            all_input.append(i['struct'])
-        generate = f'<form action="{action}" method="{method}">\n\t'+"\n\t".join(all_input)+'\n</form>'
-        return self._returnHtml(id_, class_, generate, GET)
-
     def source(self):
         for i in defaultJs:
             self._bodyCode.insert(self._idx_body, i)
